@@ -48,7 +48,7 @@ def change_school_and_get_count(driver):
         _choose_school(driver, school_list[i])
         _to_top(driver)
         _to_calendar(driver, school_list[i], gym_or_fight_list[i])
-        count_list = get_count_list(driver, year, month, weekend_and_holiday_list)
+        count_list = _get_count_list(driver, year, month, weekend_and_holiday_list)
         _to_top(driver)
         for j in range(len_date_list):
             GH.write_cell(i + 3, j + 4, count_list[j])
@@ -88,7 +88,7 @@ def _to_calendar(driver, school, gym_or_fight):
     driver, find_flag = _choose_and_click(driver, "div.SELTXT", gym_or_fight)
 
 
-def get_count_list(driver, year, month, weekend_and_holiday_list):
+def _get_count_list(driver, year, month, weekend_and_holiday_list):
     count_list = []
     active_date_count = 100
     while active_date_count > 0:
@@ -112,13 +112,13 @@ def get_count_list(driver, year, month, weekend_and_holiday_list):
                     count_list.append('')
                 else:
                     count_with_ken = td.text
-                    count_list.append(remove_ken(count_with_ken))
+                    count_list.append(_remove_ken(count_with_ken))
         if active_date_count > 0:
             driver = _click(driver, 'NEXTWEEKBTN')
     return count_list
 
 
-def remove_ken(text):
+def _remove_ken(text):
     ken_index = text.index(u"件")
     return int(text[:ken_index])
 
