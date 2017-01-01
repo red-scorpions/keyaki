@@ -3,7 +3,12 @@
 
 from helper import gspread_helper
 
+import subprocess
 
-
-GH = gspread_helper.gspread_helper()
-print GH.get_school_list()
+subprocess.call("sh ../set_env.sh",shell=True)
+GH = gspread_helper.GspreadHelper()
+GH.write_cell(1,1,0)
+GH.write_cell(1,2,1)
+GH.write_cell(2,1,2)
+GH.write_cell(2,2,3)
+# print GH.get_school_list()

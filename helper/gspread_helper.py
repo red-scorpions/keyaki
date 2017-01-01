@@ -10,11 +10,12 @@ from oauth2client.service_account import ServiceAccountCredentials
 import datetime
 
 
-class gspread_helper(object):
+class GspreadHelper(object):
     def __init__(self):
         scope = ['https://spreadsheets.google.com/feeds']
-        doc_id = '1ORQg_26MJNrFisFxMfK_p8PcsrDuIXu6TNbd3bm1gTo'
-        path = os.path.expanduser("./conf/API Project-476fa123229c.json")
+        for line in open("../conf/key_id.txt", 'r'):
+            doc_id = line
+        path = "../conf/API Project-476fa123229c.json"
         credentials = ServiceAccountCredentials.from_json_keyfile_name(path, scope)
         client = gspread.authorize(credentials)
         gfile = client.open_by_key(doc_id)
@@ -45,6 +46,9 @@ class gspread_helper(object):
         return school_list, gym_or_fight_list, initial_list
 
     def trim_after_first_empty(self, list):
+        #まず最初の空白を除く
+        list = list[1:]
+        #その上で、最初の空白の前までを残す
         first_empty_index = list.index('')
         return list[:first_empty_index]
 

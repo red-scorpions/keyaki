@@ -9,6 +9,8 @@ from helper import gspread_helper
 import datetime
 import platform
 
+#直下のget_lottery.pyを実行する用のパスになっている
+
 def access():
     if platform.system() == "Windows":
         driver = webdriver.Chrome('../driver/windows/chromedriver.exe')
@@ -37,21 +39,33 @@ def login(driver):
 
 
 def change_school_and_get_count(driver):
-    GH = gspread_helper.gspread_helper()
+    GH = gspread_helper.GspreadHelper()
     school_list, gym_or_fight_list, initial_list = GH.get_school_list()
     year, month = GH.get_next_year_and_month()
     weekend_and_holiday_list = GH.get_weekend_and_holiday_list()
     len_school_list = len(school_list)
+    # print("finish counting_len_school_list:{}".format(len_school_list))
     len_date_list = len(weekend_and_holiday_list)
+    # print("finish counting_len_date_list:{}".format(len_date_list))
     for i in range(len_school_list):
+        print("{}th school start".format(i))
         _choose_initial(driver, initial_list[i])
+        # print("_choose_initial done")
         _choose_school(driver, school_list[i])
+        # print("_choose_school done")
         _to_top(driver)
+        # print("_to_top done")
         _to_calendar(driver, school_list[i], gym_or_fight_list[i])
+        # print("_to_calendar done")
         count_list = _get_count_list(driver, year, month, weekend_and_holiday_list)
+        # print("_get_count_list done")
         _to_top(driver)
+        # print("_to_top done")
         for j in range(len_date_list):
             GH.write_cell(i + 3, j + 4, count_list[j])
+            # print("{}th_write_cell done".format(j))
+        print("{}th school end".format(i))
+    print("finish change_school_and_get_count")
 
 
 def _choose_initial(driver, initial):
@@ -94,16 +108,16 @@ def _get_count_list(driver, year, month, weekend_and_holiday_list):
     while active_date_count > 0:
         active_date_count = 0
         active_flag_list, row_div_list = _get_active_flag_list(driver)
-        print active_flag_list
+        # print(active_flag_list)
         active_date_count = len([e for e in active_flag_list if e])
         date_div_list = _fetch_list(driver, "div.DAYTX")
         date_info_list = [d.text for d in date_div_list]
         date_list = [_get_date_from_date_info(date_info) for date_info in date_info_list]
-        print date_list
+        # print(date_list)
         for i in range(7):
             if active_flag_list[i] and str(year) + "/" + str(month) + "/" + str(
                     date_list[i]) in weekend_and_holiday_list:
-                print date_list[i]
+                # print(date_list[i])
                 table = row_div_list[i].find_elements_by_css_selector("table")[-1]
                 tbody = table.find_element_by_css_selector("tbody")
                 tr = tbody.find_elements_by_css_selector("tr")[-1]
@@ -165,7 +179,7 @@ def _choose_and_click(driver, selector, ele):
     list_ = driver.find_elements_by_css_selector(selector)
     for ele_list in list_:
         if ele_list.text == ele:
-            # print ele
+            # print(ele)
             ele_list.click()
             find_flag = True
             return driver, find_flag

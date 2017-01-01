@@ -3,9 +3,10 @@
 
 import os
 from helper import selenium_helper
-import commands
+import subprocess
 
-commands.getoutput("sh set_env.sh")
+subprocess.call("sh ../set_env.sh",shell=True)
 driver = selenium_helper.access()
 selenium_helper.login(driver)
 selenium_helper.change_school_and_get_count(driver)
+driver.close()
