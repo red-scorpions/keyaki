@@ -9,7 +9,7 @@ from helper import gspread_helper
 import datetime
 import platform
 
-#直下のget_lottery.pyを実行する用のパスになっている
+# 直下のget_lottery.pyを実行する用のパスになっている
 
 def access():
     if platform.system() == "Windows":
@@ -26,6 +26,7 @@ def access():
     driver.switch_to.frame(iframe)
     driver = _click(driver, 'BB0')
     return driver
+
 
 def login(driver):
     row = 0
@@ -57,12 +58,18 @@ def change_school_and_get_count(driver):
         # print("_to_top done")
         _to_calendar(driver, school_list[i], gym_or_fight_list[i])
         # print("_to_calendar done")
-        count_list = _get_count_list(driver, year, month, weekend_and_holiday_list)
+        count_list_asa, count_list_yoru = _get_count_list(driver, year, month, weekend_and_holiday_list)
+        # print("count_list_info")
+        # print(len(count_list_asa))
+        # print(len(count_list_yoru))
+        # print(count_list_asa)
+        # print(count_list_yoru)
         # print("_get_count_list done")
         _to_top(driver)
         # print("_to_top done")
         for j in range(len_date_list):
-            GH.write_cell(i + 3, j + 4, count_list[j])
+            GH.write_cell(i + 3, j + 4, count_list_asa[j], asa_flag=True)
+            GH.write_cell(i + 3, j + 4, count_list_yoru[j], asa_flag=False)
             # print("{}th_write_cell done".format(j))
         print("{}th school end".format(i))
     print("finish change_school_and_get_count")
@@ -103,17 +110,19 @@ def _to_calendar(driver, school, gym_or_fight):
 
 
 def _get_count_list(driver, year, month, weekend_and_holiday_list):
-    count_list = []
+    count_list_asa = []
+    count_list_yoru = []
     active_date_count = 100
     while active_date_count > 0:
         active_date_count = 0
         active_flag_list, row_div_list = _get_active_flag_list(driver)
+        print(active_flag_list)
         # print(active_flag_list)
         active_date_count = len([e for e in active_flag_list if e])
         date_div_list = _fetch_list(driver, "div.DAYTX")
         date_info_list = [d.text for d in date_div_list]
         date_list = [_get_date_from_date_info(date_info) for date_info in date_info_list]
-        # print(date_list)
+        print(date_list)
         for i in range(7):
             if active_flag_list[i] and str(year) + "/" + str(month) + "/" + str(
                     date_list[i]) in weekend_and_holiday_list:
@@ -121,15 +130,22 @@ def _get_count_list(driver, year, month, weekend_and_holiday_list):
                 table = row_div_list[i].find_elements_by_css_selector("table")[-1]
                 tbody = table.find_element_by_css_selector("tbody")
                 tr = tbody.find_elements_by_css_selector("tr")[-1]
-                td = tr.find_elements_by_css_selector("td")[-1]
-                if len(td.find_elements_by_css_selector("img")) > 0:
-                    count_list.append('')
+                # 朝
+                td_asa = tr.find_elements_by_css_selector("td")[0]
+                if len(td_asa.find_elements_by_css_selector("img")) > 0:
+                    count_list_asa.append('')
                 else:
-                    count_with_ken = td.text
-                    count_list.append(_remove_ken(count_with_ken))
+                    count_with_ken = td_asa.text
+                    count_list_asa.append(_remove_ken(count_with_ken))
+                td_yoru = tr.find_elements_by_css_selector("td")[-1]
+                if len(td_yoru.find_elements_by_css_selector("img")) > 0:
+                    count_list_yoru.append('')
+                else:
+                    count_with_ken = td_yoru.text
+                    count_list_yoru.append(_remove_ken(count_with_ken))
         if active_date_count > 0:
             driver = _click(driver, 'NEXTWEEKBTN')
-    return count_list
+    return count_list_asa, count_list_yoru
 
 
 def _remove_ken(text):
