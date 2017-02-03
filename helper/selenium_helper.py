@@ -27,6 +27,17 @@ def access():
     driver = _click(driver, 'BB0')
     return driver
 
+def access_yahoo():
+    if platform.system() == "Windows":
+        driver = webdriver.Chrome('../driver/windows/chromedriver.exe')
+    else:
+        driver = webdriver.Chrome('../driver/mac/chromedriver')
+    driver.get('http://www.yahoo.co.jp/')
+    # デバッグ時はpage_source使うとよくわかるよ
+    # f = open("./page_source_top.txt", "wa")
+    # f.write(driver.page_source.encode('utf_8'))
+    # f.close()
+    return driver
 
 def login(driver):
     row = 0
