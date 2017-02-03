@@ -1,11 +1,12 @@
 import os
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
+import os_helper
 
 def main():
     scope = ['https://spreadsheets.google.com/feeds']
     doc_id = '1ORQg_26MJNrFisFxMfK_p8PcsrDuIXu6TNbd3bm1gTo'
-    path = os.path.expanduser("../conf/API Project-476fa123229c.json")
+    path = os.path.expanduser(os_helper.change_ps("../conf/API Project-476fa123229c.json"))
 
     credentials = ServiceAccountCredentials.from_json_keyfile_name(path, scope)
     client = gspread.authorize(credentials)

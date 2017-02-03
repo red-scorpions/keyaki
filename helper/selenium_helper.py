@@ -8,14 +8,15 @@ import time
 from helper import gspread_helper
 import datetime
 import platform
+import os_helper
 
 # 直下のget_lottery.pyを実行する用のパスになっている
 
 def access():
     if platform.system() == "Windows":
-        driver = webdriver.Chrome('../driver/windows/chromedriver.exe')
+        driver = webdriver.Chrome(os_helper.change_ps('../driver/windows/chromedriver.exe'))
     else:
-        driver = webdriver.Chrome('../driver/mac/chromedriver')
+        driver = webdriver.Chrome(os_helper.change_ps('../driver/mac/chromedriver'))
     driver.get('https://www.keyakinet.jp/w/')
     # デバッグ時はpage_source使うとよくわかるよ
     # f = open("./page_source_top.txt", "wa")
@@ -29,9 +30,9 @@ def access():
 
 def access_yahoo():
     if platform.system() == "Windows":
-        driver = webdriver.Chrome('../driver/windows/chromedriver.exe')
+        driver = webdriver.Chrome(os_helper.change_ps('../driver/windows/chromedriver.exe'))
     else:
-        driver = webdriver.Chrome('../driver/mac/chromedriver')
+        driver = webdriver.Chrome(os_helper.change_ps('../driver/mac/chromedriver'))
     driver.get('http://www.yahoo.co.jp/')
     # デバッグ時はpage_source使うとよくわかるよ
     # f = open("./page_source_top.txt", "wa")
@@ -41,7 +42,7 @@ def access_yahoo():
 
 def login(driver):
     row = 0
-    for line in open("../conf/id_and_pass.txt", 'r'):
+    for line in open(os_helper.change_ps("../conf/id_and_pass.txt"), 'r'):
         if row == 1:
             user_info = line.split(",")
             break

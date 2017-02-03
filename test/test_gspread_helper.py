@@ -4,8 +4,9 @@
 from helper import gspread_helper
 
 import subprocess
+import os_helper
 
-subprocess.call("sh ../set_env.sh",shell=True)
+subprocess.call(os_helper.change_ps("sh ../set_env.sh"),shell=True)
 GH = gspread_helper.GspreadHelper()
 GH.write_cell(1,1,0)
 GH.write_cell(1,2,1)

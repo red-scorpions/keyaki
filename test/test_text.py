@@ -2,9 +2,10 @@
 # -*- coding: utf-8 -*-
 
 from selenium import webdriver
+import os_helper
 
 
-driver = webdriver.Chrome('./chromedriver')
+driver = webdriver.Chrome(os_helper.change_ps('./chromedriver'))
 driver.get('http://www.w3c.org')
 element = driver.find_element_by_name('q')
 element.send_keys('hi mom')

@@ -8,12 +8,12 @@ import time
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 import datetime
-
+import os_helper
 
 class GspreadHelper(object):
     def __init__(self):
         scope = ['https://spreadsheets.google.com/feeds']
-        for line in open("../conf/key_id.txt", 'r'):
+        for line in open(os_helper.change_ps("../conf/key_id.txt"), 'r'):
             doc_id = line
         path = "../conf/API Project-476fa123229c.json"
         credentials = ServiceAccountCredentials.from_json_keyfile_name(path, scope)

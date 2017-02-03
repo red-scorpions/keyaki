@@ -8,6 +8,7 @@ from oauth2client import tools
 from oauth2client.file import Storage
 
 from apiclient import errors
+import os_helper
 
 try:
     import argparse
@@ -19,7 +20,7 @@ except ImportError:
 # If modifying these scopes, delete your previously saved credentials
 # at ~/.credentials/script-python-quickstart.json
 SCOPES = 'https://www.googleapis.com/auth/drive'
-CLIENT_SECRET_FILE = '../conf/client_secret.json'
+CLIENT_SECRET_FILE = os_helper.change_ps('../conf/client_secret.json')
 APPLICATION_NAME = 'Google Apps Script Execution API Python Quickstart'
 
 
@@ -61,7 +62,7 @@ def main():
     """
     # SCRIPT_ID = 'ENTER_YOUR_SCRIPT_ID_HERE'
     SCRIPT_ID = ""
-    for line in open("../conf/scriptid.txt", 'r'):
+    for line in open(os_helper.change_ps("../conf/scriptid.txt"), 'r'):
         SCRIPT_ID = line
     # print(SCRIPT_ID)
     SCRIPT_ID = "14CzeExylklwMS2d3cJwN6A_GVTV-bL0OSFwTj4QAMLFDvjSZMzdZvaEF"
