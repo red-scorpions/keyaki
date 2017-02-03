@@ -1,7 +1,7 @@
 import os
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
-import os_helper
+from helper import os_helper
 
 def main():
     scope = ['https://spreadsheets.google.com/feeds']

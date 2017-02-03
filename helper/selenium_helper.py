@@ -8,7 +8,7 @@ import time
 from helper import gspread_helper
 import datetime
 import platform
-import os_helper
+from helper import os_helper
 
 # 直下のget_lottery.pyを実行する用のパスになっている
 
@@ -61,24 +61,24 @@ def change_school_and_get_count(driver):
     len_date_list = len(weekend_and_holiday_list)
     # print("finish counting_len_date_list:{}".format(len_date_list))
     for i in range(len_school_list):
-        print("{}th school start".format(i))
+        print("{}th school start:{}".format(i,school_list[i]))
         _choose_initial(driver, initial_list[i])
-        # print("_choose_initial done")
+        print("_choose_initial done")
         _choose_school(driver, school_list[i])
-        # print("_choose_school done")
+        print("_choose_school done")
         _to_top(driver)
-        # print("_to_top done")
+        print("_to_top done")
         _to_calendar(driver, school_list[i], gym_or_fight_list[i])
-        # print("_to_calendar done")
+        print("_to_calendar done")
         count_list_asa, count_list_yoru = _get_count_list(driver, year, month, weekend_and_holiday_list)
         # print("count_list_info")
         # print(len(count_list_asa))
         # print(len(count_list_yoru))
         # print(count_list_asa)
         # print(count_list_yoru)
-        # print("_get_count_list done")
+        print("_get_count_list done")
         _to_top(driver)
-        # print("_to_top done")
+        print("_to_top done")
         for j in range(len_date_list):
             GH.write_cell(i + 3, j + 4, count_list_asa[j], asa_flag=True)
             GH.write_cell(i + 3, j + 4, count_list_yoru[j], asa_flag=False)
@@ -128,7 +128,7 @@ def _get_count_list(driver, year, month, weekend_and_holiday_list):
     while active_date_count > 0:
         active_date_count = 0
         active_flag_list, row_div_list = _get_active_flag_list(driver)
-        print(active_flag_list)
+        # print(active_flag_list)
         # print(active_flag_list)
         active_date_count = len([e for e in active_flag_list if e])
         date_div_list = _fetch_list(driver, "div.DAYTX")

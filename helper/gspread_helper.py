@@ -8,7 +8,7 @@ import time
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 import datetime
-import os_helper
+from helper import os_helper
 
 class GspreadHelper(object):
     def __init__(self):

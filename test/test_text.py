@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from selenium import webdriver
-import os_helper
+from helper import os_helper
 
 
 driver = webdriver.Chrome(os_helper.change_ps('./chromedriver'))

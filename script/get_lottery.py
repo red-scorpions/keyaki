@@ -4,7 +4,7 @@
 import os
 from helper import selenium_helper
 import subprocess
-import os_helper
+from helper import os_helper
 
 subprocess.call(os_helper.change_ps("sh ../set_env.sh"),shell=True)
 driver = selenium_helper.access()

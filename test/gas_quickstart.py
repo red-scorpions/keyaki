@@ -8,7 +8,7 @@ from oauth2client import tools
 from oauth2client.file import Storage
 
 from apiclient import errors
-import os_helper
+from helper import os_helper
 
 try:
     import argparse
