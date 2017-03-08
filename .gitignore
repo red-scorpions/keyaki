@@ -1,4 +1,3 @@
-local_memo.txt
 conf/*
 *.pyc
 .python-version
