@@ -10,7 +10,6 @@ import datetime
 import platform
 from helper import os_helper
 
-# 直下のget_lottery.pyを実行する用のパスになっている
 
 def access():
     if platform.system() == "Windows":
@@ -18,10 +17,6 @@ def access():
     else:
         driver = webdriver.Chrome(os_helper.change_ps('../driver/mac/chromedriver'))
     driver.get('https://www.keyakinet.jp/w/')
-    # デバッグ時はpage_source使うとよくわかるよ
-    # f = open("./page_source_top.txt", "wa")
-    # f.write(driver.page_source.encode('utf_8'))
-    # f.close()
     iframe = driver.find_element_by_name("iframe")
     time.sleep(1)
     driver.switch_to.frame(iframe)
