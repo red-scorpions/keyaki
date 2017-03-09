@@ -56,7 +56,10 @@ def change_school_and_get_count(driver):
     len_date_list = len(weekend_and_holiday_list)
     # print("finish counting_len_date_list:{}".format(len_date_list))
     for i in range(len_school_list):
-        print("{}th school start:{}".format(i,school_list[i]))
+        if platform.system() == "Windows":
+            print("{}th school start:{}".format(i,school_list[i].encode('shift-jis')))
+        else:
+            print("{}th school start:{}".format(i,school_list[i].encode('utf-8')))
         _choose_initial(driver, initial_list[i])
         print("_choose_initial done")
         _choose_school(driver, school_list[i])
