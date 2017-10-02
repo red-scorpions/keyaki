@@ -10,6 +10,7 @@ from oauth2client.service_account import ServiceAccountCredentials
 import datetime
 from helper import os_helper
 
+
 class GspreadHelper(object):
     def __init__(self):
         scope = ['https://spreadsheets.google.com/feeds']
@@ -30,8 +31,10 @@ class GspreadHelper(object):
         # シート名取得
         if current_ver == 0:
             print("シート作成ができていないと思います。まずシートを作りましょう。")
-            assert(False)
+            assert (False)
         self.new_sheet_asa = gfile.worksheet(str(year) + "/" + str(month) + "_asa_" + str(current_ver))
+        self.new_sheet_hirua = gfile.worksheet(str(year) + "/" + str(month) + "_hirua_" + str(current_ver))
+        self.new_sheet_hirub = gfile.worksheet(str(year) + "/" + str(month) + "_hirub_" + str(current_ver))
         self.new_sheet_yoru = gfile.worksheet(str(year) + "/" + str(month) + "_yoru_" + str(current_ver))
         self.school_sheet = gfile.worksheet("school_list")
 
@@ -64,8 +67,13 @@ class GspreadHelper(object):
         first_empty_index = list.index('')
         return list[:first_empty_index]
 
-    def write_cell(self, row, col, val, asa_flag):
-        if asa_flag:
+    def write_cell(self, row, col, val, sheet_type="asa"):
+
+        if sheet_type == "asa":
             self.new_sheet_asa.update_cell(row, col, val)
+        elif sheet_type == "hirua":
+            self.new_sheet_hirua.update_cell(row, col, val)
+        elif sheet_type == "hirub":
+            self.new_sheet_hirub.update_cell(row, col, val)
         else:
             self.new_sheet_yoru.update_cell(row, col, val)

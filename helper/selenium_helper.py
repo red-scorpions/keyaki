@@ -17,11 +17,13 @@ def access():
     else:
         driver = webdriver.Chrome(os_helper.change_ps('../driver/mac/chromedriver'))
     driver.get('https://www.keyakinet.jp/w/')
+    # driver.implicitly_wait(1)
     iframe = driver.find_element_by_name("iframe")
     time.sleep(1)
     driver.switch_to.frame(iframe)
     driver = _click(driver, 'BB0')
     return driver
+
 
 def access_yahoo():
     if platform.system() == "Windows":
@@ -34,6 +36,7 @@ def access_yahoo():
     # f.write(driver.page_source.encode('utf_8'))
     # f.close()
     return driver
+
 
 def login(driver):
     row = 0
@@ -57,9 +60,9 @@ def change_school_and_get_count(driver):
     # print("finish counting_len_date_list:{}".format(len_date_list))
     for i in range(len_school_list):
         if platform.system() == "Windows":
-            print("{}th school start:{}".format(i,school_list[i].encode('shift-jis')))
+            print("{}th school start:{}".format(i, school_list[i].encode('shift-jis')))
         else:
-            print("{}th school start:{}".format(i,school_list[i].encode('utf-8')))
+            print("{}th school start:{}".format(i, school_list[i].encode('utf-8')))
         _choose_initial(driver, initial_list[i])
         print("_choose_initial done")
         _choose_school(driver, school_list[i])
@@ -68,19 +71,16 @@ def change_school_and_get_count(driver):
         print("_to_top done")
         _to_calendar(driver, school_list[i], gym_or_fight_list[i])
         print("_to_calendar done")
-        count_list_asa, count_list_yoru = _get_count_list(driver, year, month, weekend_and_holiday_list)
-        # print("count_list_info")
-        # print(len(count_list_asa))
-        # print(len(count_list_yoru))
-        # print(count_list_asa)
-        # print(count_list_yoru)
+        count_list_asa, count_list_hirua, count_list_hirub, count_list_yoru = _get_count_list(driver, year, month,
+                                                                                              weekend_and_holiday_list)
         print("_get_count_list done")
         _to_top(driver)
         print("_to_top done")
         for j in range(len_date_list):
-            GH.write_cell(i + 3, j + 4, count_list_asa[j], asa_flag=True)
-            GH.write_cell(i + 3, j + 4, count_list_yoru[j], asa_flag=False)
-            # print("{}th_write_cell done".format(j))
+            GH.write_cell(i + 3, j + 4, count_list_asa[j], sheet_type="asa")
+            GH.write_cell(i + 3, j + 4, count_list_hirua[j], sheet_type="hirua")
+            GH.write_cell(i + 3, j + 4, count_list_hirub[j], sheet_type="hirub")
+            GH.write_cell(i + 3, j + 4, count_list_yoru[j], sheet_type="yoru")
         print("{}th school end".format(i))
     print("finish change_school_and_get_count")
 
@@ -121,6 +121,8 @@ def _to_calendar(driver, school, gym_or_fight):
 
 def _get_count_list(driver, year, month, weekend_and_holiday_list):
     count_list_asa = []
+    count_list_hirua = []
+    count_list_hirub = []
     count_list_yoru = []
     active_date_count = 100
     while active_date_count > 0:
@@ -147,6 +149,21 @@ def _get_count_list(driver, year, month, weekend_and_holiday_list):
                 else:
                     count_with_ken = td_asa.text
                     count_list_asa.append(_remove_ken(count_with_ken))
+                # 昼A
+                td_hirua = tr.find_elements_by_css_selector("td")[1]
+                if len(td_hirua.find_elements_by_css_selector("img")) > 0:
+                    count_list_hirua.append('')
+                else:
+                    count_with_ken = td_hirua.text
+                    count_list_hirua.append(_remove_ken(count_with_ken))
+                # 昼B
+                td_hirub = tr.find_elements_by_css_selector("td")[1]
+                if len(td_hirub.find_elements_by_css_selector("img")) > 0:
+                    count_list_hirub.append('')
+                else:
+                    count_with_ken = td_hirua.text
+                    count_list_hirub.append(_remove_ken(count_with_ken))
+                # 夜
                 td_yoru = tr.find_elements_by_css_selector("td")[-1]
                 if len(td_yoru.find_elements_by_css_selector("img")) > 0:
                     count_list_yoru.append('')
@@ -155,7 +172,7 @@ def _get_count_list(driver, year, month, weekend_and_holiday_list):
                     count_list_yoru.append(_remove_ken(count_with_ken))
         if active_date_count > 0:
             driver = _click(driver, 'NEXTWEEKBTN')
-    return count_list_asa, count_list_yoru
+    return count_list_asa, count_list_hirua, count_list_hirub, count_list_yoru
 
 
 def _remove_ken(text):
@@ -169,7 +186,11 @@ def _get_active_flag_list(driver):
     for i in range(1, 8):
         div = driver.find_element_by_css_selector("div#DAY{}".format(i))
         div_list.append(div)
-        bool_list.append(len(div.find_elements_by_css_selector("input.DAYBTN")) > 0)
+        try:
+            len_daybtn = len(div.find_elements_by_css_selector("input.DAYBTN"))
+            bool_list.append(len_daybtn > 0)
+        except:
+            bool_list.append(False)
     return bool_list, div_list
 
 
