@@ -161,7 +161,7 @@ def _get_count_list(driver, year, month, weekend_and_holiday_list):
                 if len(td_hirub.find_elements_by_css_selector("img")) > 0:
                     count_list_hirub.append('')
                 else:
-                    count_with_ken = td_hirua.text
+                    count_with_ken = td_hirub.text
                     count_list_hirub.append(_remove_ken(count_with_ken))
                 # 夜
                 td_yoru = tr.find_elements_by_css_selector("td")[-1]
