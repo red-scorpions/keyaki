@@ -17,7 +17,8 @@ def access():
     else:
         driver = webdriver.Chrome(os_helper.change_ps('../driver/mac/chromedriver'))
     driver.get('https://www.keyakinet.jp/w/')
-    driver.implicitly_wait(30)
+    # driver.implicitly_wait(30)
+    time.sleep(10)
     iframe = driver.find_element_by_name("iframe")
     time.sleep(1)
     driver.switch_to.frame(iframe)
@@ -82,7 +83,7 @@ def change_school_and_get_count(driver):
             GH.write_cell(i + 3, j + 4, count_list_hirub[j], sheet_type="hirub")
             GH.write_cell(i + 3, j + 4, count_list_yoru[j], sheet_type="yoru")
         print("{}th school end".format(i))
-    print("finish change_school_and_get_count")
+    print("全体育館の情報を取得完了しました。")
 
 
 def _choose_initial(driver, initial):
