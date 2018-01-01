@@ -17,7 +17,7 @@ def access():
     else:
         driver = webdriver.Chrome(os_helper.change_ps('../driver/mac/chromedriver'))
     driver.get('https://www.keyakinet.jp/w/')
-    # driver.implicitly_wait(1)
+    driver.implicitly_wait(30)
     iframe = driver.find_element_by_name("iframe")
     time.sleep(1)
     driver.switch_to.frame(iframe)
