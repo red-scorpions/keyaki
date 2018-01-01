@@ -61,7 +61,7 @@ def change_school_and_get_count(driver):
     # print("finish counting_len_date_list:{}".format(len_date_list))
     for i in range(len_school_list):
         if platform.system() == "Windows":
-            print("{}th school start:{}".format(i, school_list[i].encode('shift-jis')))
+            print("{}th school start:{}".format(i, school_list[i]))
         else:
             print("{}th school start:{}".format(i, school_list[i].encode('utf-8')))
         _choose_initial(driver, initial_list[i])
