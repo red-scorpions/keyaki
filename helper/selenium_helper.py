@@ -3,6 +3,8 @@
 
 from selenium import webdriver
 from selenium.webdriver.common.action_chains import ActionChains
+from selenium.common.exceptions import NoSuchElementException
+from selenium.webdriver.common.by import By
 import os
 import time
 from helper import gspread_helper
@@ -16,13 +18,9 @@ def access():
         driver = webdriver.Chrome(os_helper.change_ps('../driver/windows/chromedriver.exe'))
     else:
         driver = webdriver.Chrome(os_helper.change_ps('../driver/mac/chromedriver'))
-    driver.get('https://www.keyakinet.jp/w/')
-    # driver.implicitly_wait(30)
-    time.sleep(10)
-    iframe = driver.find_element_by_name("iframe")
-    time.sleep(1)
-    driver.switch_to.frame(iframe)
-    driver = _click(driver, 'BB0')
+    driver.get("https://setagaya.keyakinet.net/Web/Home/WgR_ModeSelect")
+    driver.find_element_by_link_text(u"ログイン").click()
+    driver.implicitly_wait(30)
     return driver
 
 
@@ -47,10 +45,18 @@ def login(driver):
             break
         row += 1
     time.sleep(1)
-    ActionChains(driver).send_keys(user_info[0]).send_keys(user_info[1]).send_keys(user_info[2]).perform()
+    driver.find_element_by_id("userID").send_keys(user_info[0])
+    driver.find_element_by_id("passWord").send_keys(user_info[1])
+    time.sleep(2)
+    ActionChains(driver).move_by_offset(10,10).click().perform() #ポップアップを消す
+    # driver.find_element_by_link_text(u"ログイン").click()
+    # unread_message_popup_xpath = "(//a[contains(@href, 'javascript:void(0);')])[29]"
+    # unread_message_popup = is_element_present(driver, By.XPATH, unread_message_popup_xpath)
+    # if unread_message_popup:
+    #     driver.find_element_by_xpath(unread_message_popup_xpath).click()
 
 
-def change_school_and_get_count(driver):
+def get_count_main(driver):
     GH = gspread_helper.GspreadHelper()
     school_list, gym_or_fight_list, initial_list = GH.get_school_list()
     year, month = GH.get_next_year_and_month()
@@ -59,32 +65,48 @@ def change_school_and_get_count(driver):
     # print("finish counting_len_school_list:{}".format(len_school_list))
     len_date_list = len(weekend_and_holiday_list)
     # print("finish counting_len_date_list:{}".format(len_date_list))
-    for i in range(len_school_list):
-        if platform.system() == "Windows":
-            print("{}th school start:{}".format(i, school_list[i]))
-        else:
-            print("{}th school start:{}".format(i, school_list[i].encode('utf-8')))
-        _choose_initial(driver, initial_list[i])
-        print("_choose_initial done")
-        _choose_school(driver, school_list[i])
-        print("_choose_school done")
-        _to_top(driver)
-        print("_to_top done")
-        _to_calendar(driver, school_list[i], gym_or_fight_list[i])
-        print("_to_calendar done")
-        count_list_asa, count_list_hirua, count_list_hirub, count_list_yoru = _get_count_list(driver, year, month,
-                                                                                              weekend_and_holiday_list)
-        print("_get_count_list done")
-        _to_top(driver)
-        print("_to_top done")
-        for j in range(len_date_list):
-            GH.write_cell(i + 3, j + 4, count_list_asa[j], sheet_type="asa")
-            GH.write_cell(i + 3, j + 4, count_list_hirua[j], sheet_type="hirua")
-            GH.write_cell(i + 3, j + 4, count_list_hirub[j], sheet_type="hirub")
-            GH.write_cell(i + 3, j + 4, count_list_yoru[j], sheet_type="yoru")
-        print("{}th school end".format(i))
-    print("全体育館の情報を取得完了しました。")
+    _click_search_school(driver, school_list)
+    # for i in range(len_school_list):
+    #     if platform.system() == "Windows":
+    #         print("{}th school start:{}".format(i, school_list[i]))
+    #     else:
+    #         print("{}th school start:{}".format(i, school_list[i].encode('utf-8')))
+    #     _choose_initial(driver, initial_list[i])
+    #     print("_choose_initial done")
+    #     _choose_school(driver, school_list[i])
+    #     print("_choose_school done")
+    #     _to_top(driver)
+    #     print("_to_top done")
+    #     _to_calendar(driver, school_list[i], gym_or_fight_list[i])
+    #     print("_to_calendar done")
+    #     count_list_asa, count_list_hirua, count_list_hirub, count_list_yoru = _get_count_list(driver, year, month,
+    #                                                                                           weekend_and_holiday_list)
+    #     print("_get_count_list done")
+    #     _to_top(driver)
+    #     print("_to_top done")
+    #     for j in range(len_date_list):
+    #         GH.write_cell(i + 3, j + 4, count_list_asa[j], sheet_type="asa")
+    #         GH.write_cell(i + 3, j + 4, count_list_hirua[j], sheet_type="hirua")
+    #         GH.write_cell(i + 3, j + 4, count_list_hirub[j], sheet_type="hirub")
+    #         GH.write_cell(i + 3, j + 4, count_list_yoru[j], sheet_type="yoru")
+    #     print("{}th school end".format(i))
+    # print("全体育館の情報を取得完了しました。")
 
+def _click_search_school(driver, school_list):
+    driver.find_element_by_link_text(u"使用目的から探す").click()
+    driver.find_element_by_xpath("//div[@id='tabs']/div[2]/div/ul/li[3]/label").click()
+    time.sleep(1)
+    driver.find_element_by_xpath("//div[@id='mokutekiForm']/ul/li[4]/label").click()
+    driver.find_element_by_id("btnSearchViaPurpose").click()
+    time.sleep(2)
+    read_more_link_text = u"さらに読み込む"
+    read_more =True
+    while read_more:
+        driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+        time.sleep(1)
+        driver.find_element_by_link_text(read_more_link_text).click()
+        read_more = is_element_present(driver, By.LINK_TEXT, read_more_link_text)
+        time.sleep(1)
 
 def _choose_initial(driver, initial):
     driver = _click(driver, 'BB4')
@@ -232,3 +254,8 @@ def _choose_and_click(driver, selector, ele):
             find_flag = True
             return driver, find_flag
     return driver, find_flag
+
+def is_element_present(driver, how, what):
+    try: driver.find_element(by=how, value=what)
+    except NoSuchElementException as e: return False
+    return True
