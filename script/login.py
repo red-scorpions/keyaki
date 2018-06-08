@@ -2,10 +2,16 @@
 # -*- coding: utf-8 -*-
 
 import os
-from helper import selenium_helper
 import subprocess
-from helper import os_helper
+import platform
+import sys
+if platform.system() == "Windows":
+    os.system("..\setup\set_env.bat")
+else:
+    subprocess.call(("sh ../setup/set_env.sh"),shell=True)
+sys.path.append("..")
 
-subprocess.call(os_helper.change_ps("sh ../set_env.sh"),shell=True)
+from helper import selenium_helper
+
 driver = selenium_helper.access()
-selenium_helper.login(driver)
+# selenium_helper.login(driver)
