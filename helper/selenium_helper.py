@@ -20,6 +20,9 @@ def access():
         driver = webdriver.Chrome(os_helper.change_ps('../driver/mac/chromedriver'))
     driver.get("https://setagaya.keyakinet.net/Web/Home/WgR_ModeSelect")
     driver.find_element_by_link_text(u"ログイン").click()
+    # 下記の書き方でもよい
+    # xpath = "//div[@id='head']/div/p/a"
+    # driver.execute_script("var xPathRes = document.evaluate('//div[@id=\"head\"]/div/p/a',document,null,9,null).singleNodeValue.click();")
     driver.implicitly_wait(30)
     return driver
 
@@ -176,24 +179,28 @@ def _chooose_school_and_get_count_list(driver, school, weekend_and_holiday_list)
             for weekend_and_holiday in weekend_and_holiday_list:
                 date = datetime.datetime.strptime(weekend_and_holiday, "%Y/%m/%d").day
                 print("date:{}".format(date))
-                if date >= 15:
-                    xpath = "//div[@id='body']/div[2]/div[3]/div[{0}]".format(j)
-                    driver.execute_script(
-                        "document.evaluate({0},document,null,9,null).singleNodeValue.scrollLeft=document.evaluate({1},document,null,9,null).singleNodeValue.scrollWidth".format(
-                            xpath, xpath))
+                # if date >= 15:
+                #     xpath = "//div[@id='body']/div[2]/div[3]/div[{0}]".format(j)
+                #     driver.execute_script(
+                #         "document.evaluate({0},document,null,9,null).singleNodeValue.scrollLeft=document.evaluate({1},document,null,9,null).singleNodeValue.scrollWidth".format(
+                #             xpath, xpath))
                 if j == 1:
-                    driver.find_element_by_xpath(
-                        "//div[@id='body']/div[2]/div[3]/div[{0}]/div[2]/table/tbody/tr/td[{1}]/label".format(j,
-                                                                                                              int(
-                                                                                                                  date) + 1)).click()
+                    xpath = "//div[@id=\"body\"]/div[2]/div[3]/div[{0}]/div[2]/table/tbody/tr/td[{1}]/label".format(j,
+                                                                                                                  int(
+                                                                                                                      date) + 1)
                 else:
-                    driver.find_element_by_xpath(
-                        "//div[@id='body']/div[2]/div[3]/div[{0}]/div[1]/table/tbody/tr/td[{1}]/label".format(j,
-                                                                                                              int(
-                                                                                                                  date) + 1)).click()
+                    xpath = "//div[@id=\"body\"]/div[2]/div[3]/div[{0}]/div[1]/table/tbody/tr/td[{1}]/label".format(j,
+                                                                                                                  int(
+                                                                                                                      date) + 1)
+                driver.execute_script(
+                    "document.evaluate('{0}',document,null,9,null).singleNodeValue.click()".format(xpath))
+                # xpath = "//div[@id='head']/div/p/a"
+                # driver.execute_script("var xPathRes = document.evaluate('//div[@id=\"head\"]/div/p/a',document,null,9,null).singleNodeValue.click();")
+
+                # driver.find_element_by_xpath(xpath).click()
             driver.find_element_by_link_text(u"次へ進む").click()
             count_list_asa, count_list_hirua, count_list_hirub, count_list_yoru = _get_count_list(driver,
-                                                                                              weekend_and_holiday_list)
+                                                                                                  weekend_and_holiday_list)
             driver.find_element_by_link_text(u"前に戻る").click()
             return count_list_asa, count_list_hirua, count_list_hirub, count_list_yoru
         driver.execute_script("window.scrollTo(0, {});".format(j * div_height))
