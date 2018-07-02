@@ -64,12 +64,19 @@ def get_count_main(driver):
                                                                                                                  weekend_and_holiday_list)
         print("_get_count_list done")
         print("_to_top done")
+        print("len")
+        print(len(count_list_asa))
+        print(len(count_list_hirua))
+        print(len(count_list_hirua))
+        print(len(count_list_yoru))
         for j in range(len_date_list):
+            print(j)
             GH.write_cell(i + 3, j + 4, count_list_asa[j], sheet_type="asa")
             GH.write_cell(i + 3, j + 4, count_list_hirua[j], sheet_type="hirua")
             GH.write_cell(i + 3, j + 4, count_list_hirub[j], sheet_type="hirub")
             GH.write_cell(i + 3, j + 4, count_list_yoru[j], sheet_type="yoru")
         print("{}th school end".format(i))
+        _refresh_start_date_and_period(driver)
     print("全体育館の情報を取得完了しました。")
 
 
@@ -85,10 +92,10 @@ def _click_search_school(driver, school_list):
     driver.implicitly_wait(3)
     while is_read_more:
         driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-        time.sleep(1.5)
+        time.sleep(1.8)
         driver.find_element_by_link_text(read_more_link_text).click()
         is_read_more = is_element_present(driver, By.LINK_TEXT, read_more_link_text)
-        time.sleep(1.5)
+        time.sleep(1.8)
     is_school = True
     i = 1
     school_xpath_base = "//tbody[@id='shisetsutbl']/tr{0}/td[2]/label"
@@ -113,6 +120,18 @@ def _change_start_date_and_period(driver):
     driver.find_element_by_id("lblPeriod1month").click()
     driver.find_element_by_id("btnHyoji").click()
 
+def _refresh_start_date_and_period(driver):
+    #1ケ月先に進めて、1ケ月戻す。こうすることで、特定の体育館の日付を選択している状態を消せる。10件までしか選択できないので、消す必要がある。
+    driver.find_element_by_id("dpStartDate").click()
+    driver.find_element_by_xpath("//div[@id='ui-datepicker-div']/div/a[2]/span").click()
+    driver.find_element_by_link_text("1").click()
+    driver.find_element_by_id("btnHyoji").click()
+    driver.find_element_by_id("dpStartDate").click()
+    driver.find_element_by_xpath("//div[@id='ui-datepicker-div']/div/a[1]/span").click()
+    driver.find_element_by_link_text("1").click()
+    driver.find_element_by_id("btnHyoji").click()
+
+
 
 def _get_count_list(driver, weekend_and_holiday_list):
     count_list_asa = []
@@ -125,10 +144,11 @@ def _get_count_list(driver, weekend_and_holiday_list):
     # //div[@id='body']/div[2]/div[2]/div/div[3]/table/tbody/tr/td[3]/label
     date_xpath_base = "//div[@id='body']/div[2]/div[2]/div/div[{0}]/table/tbody/tr/td[{1}]/label"
     div_base = "//div[@id='body']/div[2]/div[2]/div/div[{0}]"
-    for k in len(weekend_and_holiday_list):
+    for k in range(len(weekend_and_holiday_list)):
         # 朝
         date_xpath = date_xpath_base.format(k + 2, 2)
         count_with_chusen = driver.find_element_by_xpath(date_xpath).text
+        print("朝: " + count_with_chusen)
         if "抽選" in count_with_chusen:
             count_list_asa.append(_remove_chusen(count_with_chusen))
         else:
@@ -136,6 +156,7 @@ def _get_count_list(driver, weekend_and_holiday_list):
         # 昼A
         date_xpath = date_xpath_base.format(k + 2, 3)
         count_with_chusen = driver.find_element_by_xpath(date_xpath).text
+        print("昼A: " + count_with_chusen)
         if "抽選" in count_with_chusen:
             count_list_hirua.append(_remove_chusen(count_with_chusen))
         else:
@@ -143,17 +164,19 @@ def _get_count_list(driver, weekend_and_holiday_list):
         # 昼B
         date_xpath = date_xpath_base.format(k + 2, 4)
         count_with_chusen = driver.find_element_by_xpath(date_xpath).text
+        print("昼B: " + count_with_chusen)
         if "抽選" in count_with_chusen:
             count_list_hirub.append(_remove_chusen(count_with_chusen))
         else:
             count_list_hirub.append('')
         # 夜
-        date_xpath = date_xpath_base.format(k + 2, -1)
+        date_xpath = date_xpath_base.format(k + 2, 5)
         count_with_chusen = driver.find_element_by_xpath(date_xpath).text
+        print("夜: " + count_with_chusen)
         if "抽選" in count_with_chusen:
-            count_list_hirub.append(_remove_chusen(count_with_chusen))
+            count_list_yoru.append(_remove_chusen(count_with_chusen))
         else:
-            count_list_hirub.append('')
+            count_list_yoru.append('')
         div_height = int(driver.find_element_by_xpath(div_base.format(k + 2)).size["height"])
         driver.execute_script("window.scrollTo(0, {});".format((k + 1) * div_height))
     return count_list_asa, count_list_hirua, count_list_hirub, count_list_yoru
@@ -210,8 +233,8 @@ def _chooose_school_and_get_count_list(driver, school, weekend_and_holiday_list)
 
 
 def _remove_chusen(text):
-    ken_start_index = text.index(u"(")
-    ken_end_index = text.index(u")")
+    ken_start_index = text.index(u"（")
+    ken_end_index = text.index(u"）")
     return int(text[ken_start_index + 1:ken_end_index])
 
 
