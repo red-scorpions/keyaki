@@ -126,10 +126,14 @@ def _chooose_school_and_get_count_list(driver, school, weekend_and_holiday_list)
     displayed_school_xpath = displayed_school_xpath_base.format(j)
     div = "//div[@id='body']/div[2]/div[3]/div[1]"
     div_height = int(driver.find_element_by_xpath(div).size["height"])
+    div_index = 2
+    if is_element_present(driver, By.XPATH, "//div[@id=\"body\"]/div[2]/div[3]/div[1]/div[2]/p"):
+        div_index = 3
+        # print("div_index=3")
     for weekend_and_holiday in weekend_and_holiday_list:
         date = datetime.datetime.strptime(weekend_and_holiday, "%Y/%m/%d").day
         # print("date:{}".format(date))
-        xpath = "//div[@id=\"body\"]/div[2]/div[3]/div[{0}]/div[2]/table/tbody/tr/td[{1}]/label".format(j,
+        xpath = "//div[@id=\"body\"]/div[2]/div[3]/div[{0}]/div[{1}]/table/tbody/tr/td[{2}]/label".format(j,div_index,
                                                                                                         int(
                                                                                                             date) + 1)
         driver.execute_script(
