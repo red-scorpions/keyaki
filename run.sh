@@ -1,2 +1,2 @@
 cd script
-python get_lottery.py
+python3 get_lottery.py
