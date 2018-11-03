@@ -160,15 +160,21 @@ def _get_count_list(driver, weekend_and_holiday_list):
     for k in range(len(weekend_and_holiday_list)):
         # 朝
         date_xpath = date_xpath_base.format(k + 2, 2)
-        count_with_chusen = driver.find_element_by_xpath(date_xpath).text
-        # print("朝: " + count_with_chusen)
+        try:
+            count_with_chusen = driver.find_element_by_xpath(date_xpath).text
+        except:
+            count_with_chusen = ""
+            # print("朝: " + count_with_chusen)
         if "抽選" in count_with_chusen:
             count_list_asa.append(_remove_chusen(count_with_chusen))
         else:
             count_list_asa.append('')
         # 昼A
         date_xpath = date_xpath_base.format(k + 2, 3)
-        count_with_chusen = driver.find_element_by_xpath(date_xpath).text
+        try:
+            count_with_chusen = driver.find_element_by_xpath(date_xpath).text
+        except:
+            count_with_chusen = ""
         # print("昼A: " + count_with_chusen)
         if "抽選" in count_with_chusen:
             count_list_hirua.append(_remove_chusen(count_with_chusen))
@@ -176,21 +182,30 @@ def _get_count_list(driver, weekend_and_holiday_list):
             count_list_hirua.append('')
         # 昼B
         date_xpath = date_xpath_base.format(k + 2, 4)
-        count_with_chusen = driver.find_element_by_xpath(date_xpath).text
-        # print("昼B: " + count_with_chusen)
+        try:
+            count_with_chusen = driver.find_element_by_xpath(date_xpath).text
+        except:
+            count_with_chusen = ""
+            # print("昼B: " + count_with_chusen)
         if "抽選" in count_with_chusen:
             count_list_hirub.append(_remove_chusen(count_with_chusen))
         else:
             count_list_hirub.append('')
         # 夜
         date_xpath = date_xpath_base.format(k + 2, 5)
-        count_with_chusen = driver.find_element_by_xpath(date_xpath).text
+        try:
+            count_with_chusen = driver.find_element_by_xpath(date_xpath).text
+        except:
+            count_with_chusen = ""
         # print("夜: " + count_with_chusen)
         if "抽選" in count_with_chusen:
             count_list_yoru.append(_remove_chusen(count_with_chusen))
         else:
             count_list_yoru.append('')
-        div_height = int(driver.find_element_by_xpath(div_base.format(k + 2)).size["height"])
+        try:
+            div_height = int(driver.find_element_by_xpath(div_base.format(k + 2)).size["height"])
+        except:
+            div_height = 0
         driver.execute_script("window.scrollTo(0, {});".format((k + 1) * div_height))
     return count_list_asa, count_list_hirua, count_list_hirub, count_list_yoru
 
