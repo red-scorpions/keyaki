@@ -43,14 +43,18 @@ def login(driver):
 
 def get_count_main(driver):
     GH = gspread_helper.GspreadHelper()
-    school_list, gym_or_fight_list, initial_list = GH.get_school_list()
+    school_list, gym_or_fight_list, initial_list, loaded_list = GH.get_school_list()
     weekend_and_holiday_list = GH.get_weekend_and_holiday_list()
     # print("finish counting_len_school_list:{}".format(len_school_list))
     len_date_list = len(weekend_and_holiday_list)
     # print("finish counting_len_date_list:{}".format(len_date_list))
-    _click_search_school(driver, school_list,weekend_and_holiday_list, len_date_list,GH)
+    filtered_school_list = filter_school_list(school_list, loaded_list)
+    _click_search_school(driver, filtered_school_list, weekend_and_holiday_list, len_date_list,GH)
     print("全体育館の情報を取得完了しました。")
 
+def filter_school_list(school_list, loaded_list):
+    filtered_school_list = [school_list[i] if loaded_list[i]=="未" else "" for i in range(len(school_list))]
+    return filtered_school_list
 
 def _click_search_school(driver, school_list,weekend_and_holiday_list, len_date_list,GH):
     driver.find_element_by_link_text(u"使用目的から探す").click()
@@ -78,17 +82,24 @@ def _click_search_school(driver, school_list,weekend_and_holiday_list, len_date_
         time.sleep(1)
         school_xpath = school_xpath_base.format("" if k == 1 else "[{0}]".format(k))
         school = driver.find_element_by_xpath(school_xpath).text
-        if school in school_list:
+        school_index = my_index(school_list, school)
+        if school_index >= 0:
             driver.find_element_by_xpath(school_xpath).click()
             driver.find_element_by_id("btnNext").click()
             if i == 0:
                 _change_start_date_and_period(driver)
-            get_count_main_each_school(i, school_list, weekend_and_holiday_list, len_date_list,GH, driver)
+            get_count_main_each_school(school_index, school_list, weekend_and_holiday_list, len_date_list,GH, driver)
             driver.find_element_by_xpath(school_xpath).click()
             i += 1
         k += 1
         school_xpath = school_xpath_base.format("" if k == 1 else "[{0}]".format(k))
         is_school = is_element_present(driver, By.XPATH, school_xpath)
+
+def my_index(l, x, default=-1):
+    if x in l:
+        return l.index(x)
+    else:
+        return default
 
 
 def _change_start_date_and_period(driver):
@@ -113,10 +124,14 @@ def get_count_main_each_school(i, school_list, weekend_and_holiday_list, len_dat
     # print(len(count_list_yoru))
     for j in range(len_date_list):
         # print(j)
-        GH.write_cell(i + 3, j + 4, count_list_asa[j], sheet_type="asa")
-        GH.write_cell(i + 3, j + 4, count_list_hirua[j], sheet_type="hirua")
-        GH.write_cell(i + 3, j + 4, count_list_hirub[j], sheet_type="hirub")
-        GH.write_cell(i + 3, j + 4, count_list_yoru[j], sheet_type="yoru")
+        GH.write_cell(i + 3, j + 6, count_list_asa[j], sheet_type="asa")
+        GH.write_cell(i + 3, j + 6, count_list_hirua[j], sheet_type="hirua")
+        GH.write_cell(i + 3, j + 6, count_list_hirub[j], sheet_type="hirub")
+        GH.write_cell(i + 3, j + 6, count_list_yoru[j], sheet_type="yoru")
+    GH.write_cell(i + 3, 5, "済", sheet_type="asa")
+    GH.write_cell(i + 3, 5, "済", sheet_type="hirua")
+    GH.write_cell(i + 3, 5, "済", sheet_type="hirub")
+    GH.write_cell(i + 3, 5, "済", sheet_type="yoru")
     print("{}th school end".format(i))
 
 
