@@ -55,14 +55,23 @@ class GspreadHelper(object):
         school_list = self.school_sheet.col_values(2)
         gym_or_fight_list = self.school_sheet.col_values(3)
         initial_list = self.school_sheet.col_values(4)
+        loaded_list = self.new_sheet_asa.col_values(5)# 最新のシートから読み込む必要があるので、ここだけ読み込むシートが異なる
         school_list = self.trim_after_first_empty(school_list)
         gym_or_fight_list = self.trim_after_first_empty(gym_or_fight_list)
         initial_list = self.trim_after_first_empty(initial_list)
-        return school_list, gym_or_fight_list, initial_list
+        loaded_list = self.trim_after_first_and_second_empty(loaded_list)
+        return school_list, gym_or_fight_list, initial_list, loaded_list
 
     def trim_after_first_empty(self, list):
         # まず最初の空白を除く
         list = list[1:]
+        # その上で、最初の空白の前までを残す
+        first_empty_index = list.index('')
+        return list[:first_empty_index]
+
+    def trim_after_first_and_second_empty(self, list):
+        # まず最初と2番目の空白を除く
+        list = list[2:]
         # その上で、最初の空白の前までを残す
         first_empty_index = list.index('')
         return list[:first_empty_index]
