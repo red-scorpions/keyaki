@@ -19,6 +19,7 @@ def access():
     else:
         driver = webdriver.Chrome(os_helper.change_ps('../driver/mac/chromedriver'))
     driver.get("https://setagaya.keyakinet.net/Web/Home/WgR_ModeSelect")
+    driver.maximize_window()
     driver.find_element_by_link_text(u"ログイン").click()
     # 下記の書き方でもよい
     # xpath = "//div[@id='head']/div/p/a"
@@ -108,6 +109,8 @@ def _change_start_date_and_period(driver):
     driver.find_element_by_xpath("//div[@id='ui-datepicker-div']/div/a[2]/span").click()
     driver.find_element_by_link_text("1").click()
     driver.find_element_by_id("lblPeriod1month").click()
+    datepicker_height = int(driver.find_element_by_id("dpStartDate").size["height"])
+    driver.execute_script("window.scrollTo(0, {});".format(5 * datepicker_height)) # 解像度が小さいと「表示」ボタンがクリックできないことがわかったので修正
     driver.find_element_by_id("btnHyoji").click()
 
 
