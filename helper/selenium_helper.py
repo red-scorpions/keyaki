@@ -104,6 +104,7 @@ def my_index(l, x, default=-1):
 
 def _change_start_date_and_period(driver):
     driver.find_element_by_id("dpStartDate").click()
+    time.sleep(0.25) # クリックしてすぐ次に進むとelementが生成されていないことがあるらしいのでsleepを入れた
     driver.find_element_by_xpath("//div[@id='ui-datepicker-div']/div/a[2]/span").click()
     driver.find_element_by_link_text("1").click()
     driver.find_element_by_id("lblPeriod1month").click()
