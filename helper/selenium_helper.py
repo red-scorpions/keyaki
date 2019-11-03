@@ -161,6 +161,7 @@ def _chooose_school_and_get_count_list(driver, school, weekend_and_holiday_list)
     count_list_asa, count_list_hirua, count_list_hirub, count_list_yoru = _get_count_list(driver,
                                                                                           weekend_and_holiday_list)
     driver.find_element_by_link_text(u"前に戻る").click()
+    time.sleep(0.5)
     driver.find_element_by_link_text(u"前に戻る").click()
     return count_list_asa, count_list_hirua, count_list_hirub, count_list_yoru
 
