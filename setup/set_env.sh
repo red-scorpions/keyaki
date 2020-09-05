@@ -1,1 +1,1 @@
-sudo python3 -m pip install -r ../setup/requirements.txt
+python3 -m pip install -r ../setup/requirements.txt
