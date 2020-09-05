@@ -90,6 +90,7 @@ def _click_search_school(driver, school_list,weekend_and_holiday_list, len_date_
             if i == 0:
                 _change_start_date_and_period(driver)
             get_count_main_each_school(school_index, school_list, weekend_and_holiday_list, len_date_list,GH, driver)
+            # time.sleep(5) #入れると実行時間が伸びる。ただ入れないとエラーがでることもあるので、今後要調整。
             driver.find_element_by_xpath(school_xpath).click()
             i += 1
         k += 1
